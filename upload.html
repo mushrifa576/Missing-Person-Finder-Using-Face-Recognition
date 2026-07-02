@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Upload Missing Person</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+
+/* CENTER PAGE */
+
+.upload-wrapper{
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+}
+
+/* GLASS CARD */
+
+.upload-card{
+width:450px;
+padding:40px;
+border-radius:15px;
+background: rgba(255,255,255,0.08);
+backdrop-filter: blur(10px);
+box-shadow:0 15px 40px rgba(0,0,0,0.6);
+}
+
+/* TITLE */
+
+.upload-card h2{
+text-align:center;
+margin-bottom:25px;
+font-size:30px;
+color:white;
+}
+
+/* INPUT GROUP */
+
+.input-group{
+margin-bottom:18px;
+}
+
+.input-group label{
+display:block;
+margin-bottom:6px;
+color:#ddd;
+}
+
+.input-group i{
+margin-right:8px;
+}
+
+/* INPUT */
+
+.input-group input,
+.input-group textarea{
+width:100%;
+padding:12px;
+border-radius:8px;
+border:1px solid rgba(255,255,255,0.2);
+background:rgba(255,255,255,0.08);
+color:white;
+font-size:14px;
+outline:none;
+}
+
+textarea{
+resize:none;
+height:80px;
+}
+
+/* FILE INPUT */
+
+.file-input{
+color:#ccc;
+}
+
+/* BUTTON */
+
+.upload-btn{
+width:100%;
+padding:12px;
+border:none;
+border-radius:8px;
+background:linear-gradient(90deg,#0072ff,#00c6ff);
+color:white;
+font-size:16px;
+font-weight:bold;
+cursor:pointer;
+transition:0.3s;
+}
+
+.upload-btn:hover{
+transform:scale(1.05);
+box-shadow:0 0 20px #00e5ff;
+}
+
+/* FOOT LINKS */
+
+.upload-footer{
+margin-top:20px;
+text-align:center;
+}
+
+.upload-footer a{
+color:#ccc;
+text-decoration:none;
+}
+
+.upload-footer a:hover{
+color:white;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="upload-wrapper">
+
+<div class="upload-card">
+
+<h2>Upload Missing Person</h2>
+
+<form method="POST" enctype="multipart/form-data">
+
+<div class="input-group">
+<label><i class="fa fa-user"></i> Name</label>
+<input type="text" name="name" placeholder="Enter Name" required>
+</div>
+
+<div class="input-group">
+<label><i class="fa fa-id-card"></i> Age</label>
+<input type="number" name="age" placeholder="Enter Age" required>
+</div>
+
+<div class="input-group">
+<label><i class="fa fa-file-alt"></i> Description</label>
+<textarea name="description" placeholder="Enter description" required></textarea>
+</div>
+
+<div class="input-group">
+<label><i class="fa fa-image"></i> Upload Photo</label>
+<input class="file-input" type="file" name="photo" required>
+</div>
+
+<button class="upload-btn" type="submit">UPLOAD</button>
+
+</form>
+
+<div class="upload-footer">
+<a href="/dashboard">← Back to Dashboard</a>
+</div>
+
+</div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Missing Person Finder</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+<div class="overlay">
+
+    <div class="title-section">
+        <h1>MISSING PERSON FINDER</h1>
+        <p>Using Face Recognition Technology</p>
+    </div>
+
+    <div class="card-container">
+
+        <!-- ADMIN -->
+        <div class="card admin">
+            <div class="icon">⚙</div>
+            <h2>Admin Login</h2>
+            <p>Access Admin Panel</p>
+            <a href="/admin_login" class="btn">GO TO LOGIN</a>
+        </div>
+
+        <!-- USER LOGIN -->
+        <div class="card user">
+            <div class="icon">🔑</div>
+            <h2>User Login</h2>
+            <p>Login to Your Account</p>
+            <a href="/login" class="btn">LOGIN HERE</a>
+        </div>
+
+        <!-- REGISTER -->
+        <div class="card register">
+            <div class="icon">➕</div>
+            <h2>User Registration</h2>
+            <p>Create a New Account</p>
+            <a href="/register" class="btn">SIGN UP NOW</a>
+        </div>
+
+    </div>
+
+    <div class="footer-text">
+        Find Missing Persons Quickly & Easily!
+    </div>
+
+</div>
+
+</body>
+</html>

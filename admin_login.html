@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin Login - Missing Person Finder</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+<style>
+
+/* CENTER LOGIN CARD */
+
+.login-wrapper{
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+}
+
+/* LOGIN CARD */
+
+.login-card{
+width:380px;
+padding:40px;
+border-radius:15px;
+background: rgba(255,255,255,0.08);
+backdrop-filter: blur(10px);
+box-shadow:0 10px 30px rgba(0,0,0,0.6);
+text-align:center;
+}
+
+/* TITLE */
+
+.login-card h2{
+margin-bottom:25px;
+font-size:28px;
+color:white;
+text-shadow:0 0 10px #00e5ff;
+}
+
+/* INPUT */
+
+.login-card input{
+width:100%;
+padding:12px;
+margin:10px 0;
+border:none;
+border-radius:8px;
+background: rgba(255,255,255,0.1);
+color:white;
+font-size:14px;
+outline:none;
+}
+
+.login-card input::placeholder{
+color:#ccc;
+}
+
+/* BUTTON */
+
+.login-btn{
+width:100%;
+padding:12px;
+margin-top:15px;
+border:none;
+border-radius:8px;
+font-size:16px;
+font-weight:bold;
+cursor:pointer;
+background: linear-gradient(90deg,#0072ff,#00c6ff);
+color:white;
+transition:0.3s;
+}
+
+.login-btn:hover{
+transform:scale(1.05);
+box-shadow:0 0 15px #00e5ff;
+}
+
+/* BACK LINK */
+
+.back-link{
+display:block;
+margin-top:20px;
+color:#aaa;
+text-decoration:none;
+}
+
+.back-link:hover{
+color:white;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="login-wrapper">
+
+<div class="login-card">
+
+<h2>Admin Login</h2>
+
+<form method="POST">
+
+<input type="text" name="username" placeholder="Enter Username" required>
+
+<input type="password" name="password" placeholder="Enter Password" required>
+
+<button class="login-btn" type="submit">Login</button>
+
+</form>
+
+<a class="back-link" href="/">← Back to Home</a>
+
+</div>
+
+</div>
+
+</body>
+</html>

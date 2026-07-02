@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>User Registration</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+<!-- icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+
+/* CENTER PAGE */
+
+.register-wrapper{
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+}
+
+/* GLASS CARD */
+
+.register-card{
+width:420px;
+padding:40px;
+border-radius:15px;
+background: rgba(255,255,255,0.08);
+backdrop-filter: blur(10px);
+box-shadow:0 15px 40px rgba(0,0,0,0.6);
+}
+
+/* TITLE */
+
+.register-card h2{
+text-align:center;
+margin-bottom:25px;
+font-size:30px;
+color:white;
+}
+
+/* INPUT GROUP */
+
+.input-group{
+margin-bottom:20px;
+}
+
+.input-group label{
+display:block;
+margin-bottom:6px;
+color:#ddd;
+font-size:15px;
+}
+
+/* ICON */
+
+.input-group i{
+margin-right:8px;
+}
+
+/* INPUT */
+
+.input-group input{
+width:100%;
+padding:12px;
+border-radius:8px;
+border:1px solid rgba(255,255,255,0.2);
+background:rgba(255,255,255,0.08);
+color:white;
+font-size:14px;
+outline:none;
+}
+
+.input-group input::placeholder{
+color:#bbb;
+}
+
+/* REGISTER BUTTON */
+
+.register-btn{
+width:100%;
+padding:12px;
+border:none;
+border-radius:8px;
+background:linear-gradient(90deg,#0072ff,#00c6ff);
+color:white;
+font-size:16px;
+font-weight:bold;
+cursor:pointer;
+transition:0.3s;
+}
+
+.register-btn:hover{
+transform:scale(1.05);
+box-shadow:0 0 20px #00e5ff;
+}
+
+/* FOOT LINKS */
+
+.register-footer{
+margin-top:18px;
+display:flex;
+justify-content:space-between;
+font-size:14px;
+}
+
+.register-footer a{
+color:#ccc;
+text-decoration:none;
+}
+
+.register-footer a:hover{
+color:white;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="register-wrapper">
+
+<div class="register-card">
+
+<h2>User Registration</h2>
+
+<form method="POST">
+
+<div class="input-group">
+<label><i class="fa fa-user"></i> Username</label>
+<input type="text" name="username" placeholder="Username" required>
+</div>
+
+<div class="input-group">
+<label><i class="fa fa-envelope"></i> Email Address</label>
+<input type="email" name="email" placeholder="Email Address" required>
+</div>
+
+<div class="input-group">
+<label><i class="fa fa-lock"></i> Password</label>
+<input type="password" name="password" placeholder="Password" required>
+</div>
+
+<button class="register-btn" type="submit">REGISTER</button>
+
+</form>
+
+<div class="register-footer">
+<a href="/">← Back</a>
+<a href="/login">Already have an account? Login</a>
+</div>
+
+</div>
+
+</div>
+
+</body>
+</html>

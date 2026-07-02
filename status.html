@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Status</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<div class="container">
+    <h2>Match Status</h2>
+
+    {% if data %}
+        <p><strong>Name:</strong> {{ data[0] }}</p>
+        <p><strong>Status:</strong> {{ data[1] }}</p>
+    {% else %}
+        <p>No Record Found</p>
+    {% endif %}
+
+    <a href="/dashboard">Back</a>
+</div>
+
+</body>
+</html>

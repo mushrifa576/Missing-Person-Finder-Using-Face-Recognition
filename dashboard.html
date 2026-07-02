@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>User Dashboard</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+<!-- Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+
+/* CENTER DASHBOARD */
+
+.dashboard-wrapper{
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+flex-direction:column;
+}
+
+/* TITLE */
+
+.dashboard-title{
+font-size:38px;
+margin-bottom:40px;
+color:white;
+text-shadow:0 0 15px #00e5ff;
+}
+
+/* CARD GRID */
+
+.dashboard-grid{
+display:grid;
+grid-template-columns: repeat(2, 220px);
+gap:30px;
+}
+
+/* CARD */
+
+.dashboard-card{
+padding:30px;
+border-radius:15px;
+background: rgba(255,255,255,0.08);
+backdrop-filter: blur(10px);
+box-shadow:0 15px 40px rgba(0,0,0,0.6);
+text-align:center;
+transition:0.3s;
+cursor:pointer;
+text-decoration:none;
+color:white;
+}
+
+/* HOVER */
+
+.dashboard-card:hover{
+transform:translateY(-8px);
+box-shadow:0 0 20px #00e5ff;
+}
+
+/* ICON */
+
+.dashboard-card i{
+font-size:35px;
+margin-bottom:15px;
+color:#00e5ff;
+}
+
+/* TEXT */
+
+.dashboard-card h3{
+margin:0;
+font-size:18px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="dashboard-wrapper">
+
+<h1 class="dashboard-title">User Dashboard</h1>
+
+<div class="dashboard-grid">
+
+<a class="dashboard-card" href="/upload">
+<i class="fa fa-upload"></i>
+<h3>Upload Case</h3>
+</a>
+
+<a class="dashboard-card" href="/search">
+<i class="fa fa-search"></i>
+<h3>Search Person</h3>
+</a>
+
+<a class="dashboard-card" href="/status">
+<i class="fa fa-list"></i>
+<h3>View Status</h3>
+</a>
+
+<a class="dashboard-card" href="/logout">
+<i class="fa fa-sign-out-alt"></i>
+<h3>Logout</h3>
+</a>
+
+</div>
+
+</div>
+
+</body>
+</html>
