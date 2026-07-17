@@ -1,8 +1,8 @@
 DB_CONFIG = {
     "host": "localhost",
-    "database": "mpf",
+    "database": "###",
     "user": "postgres",
-    "password": "mushri@2003"
+    "password": "###"
 }
 
 SIMILARITY_THRESHOLD = 0.40
