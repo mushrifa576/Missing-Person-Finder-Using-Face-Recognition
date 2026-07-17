@@ -2,7 +2,7 @@ import smtplib
 from email.mime.text import MIMEText
 from database import get_connection
 
-SENDER_EMAIL = "mubashirtkm2@gmail.com"
+SENDER_EMAIL = "###"
 SENDER_PASSWORD = "ncbbvdmtljogaiwb"  # use Gmail App Password
 
 def send_match_alert(user_id, location):
