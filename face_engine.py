@@ -130,7 +130,7 @@ def create_embedding_from_image(image_path):
         return None
 
     processed = preprocess_frame(image)
-    faces = face_app.get(processed)
+    faces = get_face_app().get(processed)
 
     if not faces:
         return None
