@@ -43,8 +43,19 @@ CCTV_FRAME_FOLDER.mkdir(parents=True, exist_ok=True)
 CTX_ID = int(os.getenv("INSIGHTFACE_CTX_ID", "-1"))
 
 # Load buffalo_l once when this module is imported.
-face_app = FaceAnalysis(name="buffalo_l")
-face_app.prepare(ctx_id=CTX_ID, det_size=(640, 640))
+
+face_app = None
+
+def get_face_app():
+    global face_app
+
+    if face_app is None:
+        print("Loading InsightFace buffalo_l model...")
+        face_app = FaceAnalysis(name="buffalo_l")
+        face_app.prepare(ctx_id=CTX_ID, det_size=(640, 640))
+        print("InsightFace model loaded successfully!")
+
+    return face_app
 
 
 # ---------------- PREPROCESSING ----------------
@@ -92,7 +103,7 @@ def create_embeddings_from_frame(frame, min_face_size=40):
     if processed is None:
         return []
 
-    faces = face_app.get(processed)
+    faces = get_face_app().get(processed)
     embeddings = []
 
     for face in faces:
