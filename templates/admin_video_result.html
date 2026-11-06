@@ -1,0 +1,30 @@
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+<div class="container">
+    <div class="container">
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flash-container">
+      {% for category, message in messages %}
+        <div class="flash {{category}}">
+            {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<h2>Upload Missing Person</h2>
+    <h2>Video Search Result</h2>
+
+    <p><strong>Camera:</strong> {{ camera }}</p>
+    <p><strong>Match:</strong> {{ result_name }}</p>
+    <p><strong>Similarity:</strong> {{ score }}</p>
+
+    {% if location %}
+        <p><strong>Detected At:</strong> {{ location }}</p>
+    {% endif %}
+
+    <a href="/admin_dashboard">Back</a>
+</div>

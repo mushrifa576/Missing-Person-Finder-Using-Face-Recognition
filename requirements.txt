@@ -1,0 +1,10 @@
+Flask
+flask-cors
+psycopg2-binary
+insightface
+onnxruntime
+opencv-python-headless
+numpy
+requests
+python-dotenv
+gunicorn

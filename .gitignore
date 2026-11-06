@@ -1,0 +1,11 @@
+.env
+venv/
+__pycache__/
+*.pyc
+static/uploads/
+static/cctv_frames/
+face_embeddings/
+venv/
+__pycache__/
+*.pyc
+.env

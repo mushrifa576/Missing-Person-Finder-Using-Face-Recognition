@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+venv/
+.env
+.env.*
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Temporary files
+.DS_Store
+Thumbs.db
+
+# Uploaded personal data
+static/uploads/*
+!static/uploads/.gitkeep
+
+# Model/cache files
+*.onnx
+*.pkl
+*.joblib
