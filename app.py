@@ -1,17 +1,17 @@
+
 import os
 import uuid
 from pathlib import Path as FilePath
 
-from flask import flash, redirect, url_for
-from flask import Flask, request, session, flash, redirect, url_for, render_template
-from flask import get_flashed_messages
-
 import cv2
 import numpy as np
+
 from dotenv import load_dotenv
 from flask import (
     Flask,
     abort,
+    flash,
+    get_flashed_messages,
     redirect,
     render_template,
     render_template_string,
@@ -40,6 +40,7 @@ UPLOAD_FOLDER = BASE_DIR / "static" / "uploads"
 UPLOAD_FOLDER.mkdir(parents=True, exist_ok=True)
 
 app = Flask(__name__)
+
 app.secret_key = os.environ.get(
     "SECRET_KEY",
     "missing-person-finder-development-key"
@@ -83,11 +84,15 @@ def static_file_url(path):
     """Convert a stored static path into a URL usable by an HTML img/video tag."""
     if not path:
         return ""
+
     normalized = str(path).replace("\\", "/")
+
     if normalized.startswith("/"):
         normalized = normalized[1:]
+
     if normalized.startswith("static/"):
         normalized = normalized[len("static/"):]
+
     return url_for("static", filename=normalized)
 
 
@@ -99,7 +104,9 @@ def is_user():
     return session.get("role") == "user"
 
 
-def verify_password_and_upgrade(table, username, supplied_password, stored_password):
+def verify_password_and_upgrade(
+    table, username, supplied_password, stored_password
+):
     """Verify modern hashes and support old plaintext records during migration.
 
     Existing plaintext passwords are upgraded to Werkzeug hashes after a
@@ -109,6 +116,7 @@ def verify_password_and_upgrade(table, username, supplied_password, stored_passw
         return False
 
     is_hash = str(stored_password).startswith(("pbkdf2:", "scrypt:"))
+
     if is_hash:
         try:
             return check_password_hash(stored_password, supplied_password)
@@ -124,6 +132,7 @@ def verify_password_and_upgrade(table, username, supplied_password, stored_passw
 
     conn = get_connection()
     cur = conn.cursor()
+
     try:
         cur.execute(
             f"UPDATE {table} SET password=%s WHERE username=%s",
@@ -133,61 +142,8 @@ def verify_password_and_upgrade(table, username, supplied_password, stored_passw
     finally:
         cur.close()
         conn.close()
+
     return True
-
-
-def draw_bounding_box(frame_path, target_embedding):
-    """Draw a box around the detected face closest to the target embedding.
-
-    Note: the score below is Euclidean distance, not cosine distance.
-    """
-    image = cv2.imread(str(frame_path))
-    if image is None:
-        return frame_path
-
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    cascade_path = cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
-    face_cascade = cv2.CascadeClassifier(cascade_path)
-
-    if face_cascade.empty():
-        return frame_path
-
-    faces = face_cascade.detectMultiScale(gray, 1.3, 5)
-    best_face = None
-    best_score = float("inf")
-
-    for (x, y, w, h) in faces:
-        face_img = image[y:y + h, x:x + w]
-        try:
-            representations = DeepFace.represent(
-                img_path=face_img,
-                model_name="ArcFace",
-                enforce_detection=False,
-            )
-            embedding = np.asarray(representations[0]["embedding"])
-            score = np.linalg.norm(
-                np.asarray(target_embedding) - embedding
-            )
-
-            if score < best_score:
-                best_score = score
-                best_face = (x, y, w, h)
-        except Exception:
-            # Skip a face if the model cannot generate its representation.
-            continue
-
-    if best_face is not None:
-        x, y, w, h = best_face
-        cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 3)
-
-    frame_path = str(frame_path)
-    output_path = (
-        frame_path[:-4] + "_boxed.jpg"
-        if frame_path.lower().endswith(".jpg")
-        else frame_path + "_boxed.jpg"
-    )
-    cv2.imwrite(output_path, image)
-    return output_path
 
 
 @app.errorhandler(413)
@@ -200,8 +156,8 @@ def index():
     return render_template("index.html")
 
 
-
 # ---------------- USER REGISTRATION ----------------
+
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
@@ -273,11 +229,20 @@ def register():
                 )
 
                 if "username" in constraint:
-                    flash("Username already exists. Please choose another.", "error")
+                    flash(
+                        "Username already exists. Please choose another.",
+                        "error"
+                    )
                 elif "email" in constraint:
-                    flash("Email already registered. Please use another.", "error")
+                    flash(
+                        "Email already registered. Please use another email.",
+                        "error"
+                    )
                 else:
-                    flash("This account information is already registered.", "error")
+                    flash(
+                        "This account information is already registered.",
+                        "error"
+                    )
 
                 return redirect(url_for("register"))
 
@@ -290,7 +255,9 @@ def register():
 
     return render_template("register.html")
 
+
 # ---------------- USER LOGIN ----------------
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
@@ -299,6 +266,7 @@ def login():
 
         conn = get_connection()
         cur = conn.cursor()
+
         try:
             cur.execute(
                 "SELECT id, password FROM users WHERE username=%s",
@@ -317,12 +285,16 @@ def login():
             session["role"] = "user"
             return redirect("/dashboard")
 
-        return render_template("login.html", error="Invalid username or password.")
+        return render_template(
+            "login.html",
+            error="Invalid username or password."
+        )
 
     return render_template("login.html")
 
 
 # ---------------- ADMIN LOGIN ----------------
+
 @app.route("/admin_login", methods=["GET", "POST"])
 def admin_login():
     if request.method == "POST":
@@ -331,6 +303,7 @@ def admin_login():
 
         conn = get_connection()
         cur = conn.cursor()
+
         try:
             cur.execute(
                 "SELECT id, password FROM admins WHERE username=%s",
@@ -350,29 +323,35 @@ def admin_login():
             return redirect("/admin_dashboard")
 
         return render_template(
-            "admin_login.html", error="Invalid username or password."
+            "admin_login.html",
+            error="Invalid username or password."
         )
 
     return render_template("admin_login.html")
 
 
 # ---------------- USER DASHBOARD ----------------
+
 @app.route("/dashboard")
 def dashboard():
     if not is_user():
         return redirect("/")
+
     return render_template("dashboard.html")
 
 
 # ---------------- ADMIN DASHBOARD ----------------
+
 @app.route("/admin_dashboard")
 def admin_dashboard():
     if not is_admin():
         return redirect("/admin_login")
+
     return render_template("admin_dashboard.html")
 
 
 # ---------------- USER UPLOAD ----------------
+
 @app.route("/upload", methods=["GET", "POST"])
 def upload():
     if not is_user():
@@ -380,6 +359,7 @@ def upload():
 
     conn = get_connection()
     cur = conn.cursor()
+
     try:
         cur.execute(
             "SELECT id FROM missing_persons WHERE user_id=%s",
@@ -400,20 +380,27 @@ def upload():
 
         try:
             path = save_upload(
-                request.files.get("photo"), ALLOWED_IMAGE_EXTENSIONS
+                request.files.get("photo"),
+                ALLOWED_IMAGE_EXTENSIONS
             )
         except ValueError as exc:
             return str(exc), 400
 
         success, message = store_missing_person(
-            session["user_id"], name, age, description, path
+            session["user_id"],
+            name,
+            age,
+            description,
+            path
         )
+
         return message
 
     return render_template("upload.html")
 
 
 # ---------------- USER CCTV SEARCH ----------------
+
 @app.route("/search")
 def search():
     if not is_user():
@@ -421,6 +408,7 @@ def search():
 
     conn = get_connection()
     cur = conn.cursor()
+
     try:
         cur.execute(
             "SELECT photo_path FROM missing_persons WHERE user_id=%s",
@@ -435,6 +423,7 @@ def search():
         return "No uploaded image found."
 
     filepath = data[0]
+
     result, score, location, camera_name, frame_path = search_face(
         session["user_id"]
     )
@@ -446,12 +435,19 @@ def search():
             <p><strong>Camera:</strong> {{ camera_name }}</p>
             <p><strong>Location:</strong> {{ location }}</p>
             <p><strong>Similarity score:</strong> {{ score }}</p>
+
             <div style="display:flex;gap:40px;justify-content:center;flex-wrap:wrap">
-              <div><h3>Uploaded Image</h3>
-                <img src="{{ uploaded_url }}" width="250"></div>
-              <div><h3>Matched CCTV Frame</h3>
-                <img src="{{ frame_url }}" width="350"></div>
+              <div>
+                <h3>Uploaded Image</h3>
+                <img src="{{ uploaded_url }}" width="250">
+              </div>
+
+              <div>
+                <h3>Matched CCTV Frame</h3>
+                <img src="{{ frame_url }}" width="350">
+              </div>
             </div>
+
             <br><a href="/dashboard">Back</a>
             """,
             camera_name=camera_name,
@@ -475,6 +471,7 @@ def search():
 
 
 # ---------------- USER STATUS ----------------
+
 @app.route("/status")
 def status():
     if not is_user():
@@ -482,6 +479,7 @@ def status():
 
     conn = get_connection()
     cur = conn.cursor()
+
     try:
         cur.execute(
             """
@@ -500,6 +498,7 @@ def status():
 
 
 # ---------------- ADMIN UPLOAD AND SEARCH ----------------
+
 @app.route("/admin_upload_search", methods=["GET", "POST"])
 def admin_upload_search():
     if not is_admin():
@@ -511,7 +510,8 @@ def admin_upload_search():
 
         try:
             filepath = save_upload(
-                request.files.get("photo"), ALLOWED_IMAGE_EXTENSIONS
+                request.files.get("photo"),
+                ALLOWED_IMAGE_EXTENSIONS
             )
         except ValueError as exc:
             return str(exc), 400
@@ -521,11 +521,13 @@ def admin_upload_search():
         result, score, location, camera_name, frame_path = (
             search_face_for_admin(filepath)
         )
+
         twins = detect_possible_twin(filepath)
 
         if result == "MATCH":
             conn = get_connection()
             cur = conn.cursor()
+
             try:
                 cur.execute(
                     """
@@ -543,33 +545,78 @@ def admin_upload_search():
             return render_template_string(
                 """
                 <!doctype html>
-                <html><head><title>Possible Match Found</title>
-                <style>
-                  body {font-family:Arial,sans-serif;text-align:center;background:#f4f6f9}
-                  .container {width:80%;margin:auto}
-                  .info {margin-bottom:30px;font-size:18px}
-                  .image-container {display:flex;justify-content:center;gap:40px;flex-wrap:wrap}
-                  .image-box {background:white;padding:15px;border-radius:10px;
-                    border:2px solid #ddd;box-shadow:0 4px 10px rgba(0,0,0,.1)}
-                  img {max-width:100%;height:auto;border-radius:8px}
-                  a {display:inline-block;margin-top:30px;padding:10px 20px;
-                    background:#007BFF;color:white;text-decoration:none;border-radius:6px}
-                </style></head><body>
+                <html>
+                <head>
+                    <title>Possible Match Found</title>
+                    <style>
+                      body {
+                        font-family: Arial, sans-serif;
+                        text-align: center;
+                        background: #f4f6f9;
+                      }
+                      .container {
+                        width: 80%;
+                        margin: auto;
+                      }
+                      .info {
+                        margin-bottom: 30px;
+                        font-size: 18px;
+                      }
+                      .image-container {
+                        display: flex;
+                        justify-content: center;
+                        gap: 40px;
+                        flex-wrap: wrap;
+                      }
+                      .image-box {
+                        background: white;
+                        padding: 15px;
+                        border-radius: 10px;
+                        border: 2px solid #ddd;
+                        box-shadow: 0 4px 10px rgba(0,0,0,.1);
+                      }
+                      img {
+                        max-width: 100%;
+                        height: auto;
+                        border-radius: 8px;
+                      }
+                      a {
+                        display: inline-block;
+                        margin-top: 30px;
+                        padding: 10px 20px;
+                        background: #007BFF;
+                        color: white;
+                        text-decoration: none;
+                        border-radius: 6px;
+                      }
+                    </style>
+                </head>
+                <body>
                 <div class="container">
                   <h2>Possible Match Found</h2>
+
                   <div class="info">
                     <p><strong>Camera Name:</strong> {{ camera_name }}</p>
                     <p><strong>Location:</strong> {{ location }}</p>
                     <p><strong>Similarity Score:</strong> {{ score }}</p>
                   </div>
+
                   <div class="image-container">
-                    <div class="image-box"><h3>Uploaded Image</h3>
-                      <img src="{{ uploaded_url }}" width="250"></div>
-                    <div class="image-box"><h3>Matched CCTV Frame</h3>
-                      <img src="{{ frame_url }}" width="350"></div>
+                    <div class="image-box">
+                      <h3>Uploaded Image</h3>
+                      <img src="{{ uploaded_url }}" width="250">
+                    </div>
+
+                    <div class="image-box">
+                      <h3>Matched CCTV Frame</h3>
+                      <img src="{{ frame_url }}" width="350">
+                    </div>
                   </div>
+
                   <a href="/admin_dashboard">Back to Dashboard</a>
-                </div></body></html>
+                </div>
+                </body>
+                </html>
                 """,
                 camera_name=camera_name,
                 location=location,
@@ -584,7 +631,7 @@ def admin_upload_search():
             <p><strong>Similarity Score:</strong> {{ score }}</p>
             <h3>Uploaded Image</h3>
             <img src="{{ uploaded_url }}" width="200">
-            <br><a href="/admin_dashboard">Back to Dashboard</a>
+            <br><a href="/admin_dashboard">Back</a>
             """,
             score=score,
             uploaded_url=static_file_url(filepath),
@@ -594,6 +641,7 @@ def admin_upload_search():
 
 
 # ---------------- ADMIN CCTV VIDEO UPLOAD ----------------
+
 @app.route("/admin_upload_video", methods=["GET", "POST"])
 def admin_upload_video():
     if not is_admin():
@@ -605,13 +653,16 @@ def admin_upload_video():
 
         try:
             video_path = save_upload(
-                request.files.get("video"), ALLOWED_VIDEO_EXTENSIONS
+                request.files.get("video"),
+                ALLOWED_VIDEO_EXTENSIONS
             )
         except ValueError as exc:
             return str(exc), 400
 
         message = store_video_embeddings(
-            video_path, camera_name, cctv_location
+            video_path,
+            camera_name,
+            cctv_location
         )
 
         return render_template_string(
@@ -623,6 +674,7 @@ def admin_upload_video():
 
 
 # ---------------- ADMIN IMAGE SEARCH IN CCTV ----------------
+
 @app.route("/search_cctv", methods=["GET", "POST"])
 def search_cctv():
     if not is_admin():
@@ -631,7 +683,8 @@ def search_cctv():
     if request.method == "POST":
         try:
             image_path = save_upload(
-                request.files.get("photo"), ALLOWED_IMAGE_EXTENSIONS
+                request.files.get("photo"),
+                ALLOWED_IMAGE_EXTENSIONS
             )
         except ValueError as exc:
             return str(exc), 400
@@ -646,12 +699,19 @@ def search_cctv():
                 <h2>Possible Match Found</h2>
                 <p><strong>Camera:</strong> {{ camera_name }}</p>
                 <p><strong>Location:</strong> {{ location }}</p>
+
                 <div style="display:flex;gap:40px;justify-content:center;flex-wrap:wrap">
-                  <div><h3>Uploaded Image</h3>
-                    <img src="{{ uploaded_url }}" width="250"></div>
-                  <div><h3>Matched CCTV Frame</h3>
-                    <img src="{{ frame_url }}" width="350"></div>
+                  <div>
+                    <h3>Uploaded Image</h3>
+                    <img src="{{ uploaded_url }}" width="250">
+                  </div>
+
+                  <div>
+                    <h3>Matched CCTV Frame</h3>
+                    <img src="{{ frame_url }}" width="350">
+                  </div>
                 </div>
+
                 <br><a href="/admin_dashboard">Back</a>
                 """,
                 camera_name=camera_name,
@@ -666,6 +726,7 @@ def search_cctv():
 
 
 # ---------------- ADMIN VIEW USERS ----------------
+
 @app.route("/view_users")
 def view_users():
     if not is_admin():
@@ -673,6 +734,7 @@ def view_users():
 
     conn = get_connection()
     cur = conn.cursor()
+
     try:
         cur.execute("SELECT id, username FROM users")
         users = cur.fetchall()
@@ -684,6 +746,7 @@ def view_users():
 
 
 # ---------------- ADMIN VIEW CASES ----------------
+
 @app.route("/view_cases")
 def view_cases():
     if not is_admin():
@@ -691,6 +754,7 @@ def view_cases():
 
     conn = get_connection()
     cur = conn.cursor()
+
     try:
         cur.execute(
             """
@@ -707,6 +771,7 @@ def view_cases():
 
 
 # ---------------- ADMIN ANALYTICS ----------------
+
 @app.route("/analytics")
 def analytics():
     if not is_admin():
@@ -714,6 +779,7 @@ def analytics():
 
     conn = get_connection()
     cur = conn.cursor()
+
     try:
         cur.execute("SELECT COUNT(*) FROM users")
         total_users = cur.fetchone()[0]
@@ -729,6 +795,7 @@ def analytics():
             """
         )
         total_found = cur.fetchone()[0]
+
     finally:
         cur.close()
         conn.close()
@@ -742,6 +809,7 @@ def analytics():
 
 
 # ---------------- LOGOUT ----------------
+
 @app.route("/logout")
 def logout():
     session.clear()
@@ -754,6 +822,7 @@ def admin_logout():
     return redirect("/")
 
 
+# ---------------- FLASH MESSAGE TEST ----------------
 
 @app.route("/test_flash")
 def test_flash():
@@ -765,7 +834,8 @@ def test_flash():
 
     print("FLASH MESSAGES:", messages)
 
-    return render_template_string("""
+    return render_template_string(
+        """
         <h2>Flash Test</h2>
 
         {% for category, message in messages %}
@@ -773,7 +843,9 @@ def test_flash():
                 {{ message }}
             </p>
         {% endfor %}
-    """, messages=messages)
+        """,
+        messages=messages
+    )
 
 
 if __name__ == "__main__":
