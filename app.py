@@ -8,7 +8,6 @@ from flask import get_flashed_messages
 
 import cv2
 import numpy as np
-from deepface import DeepFace
 from dotenv import load_dotenv
 from flask import (
     Flask,
